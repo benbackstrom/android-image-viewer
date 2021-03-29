@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation.xml"
+    app:startDestination="@id/home_dest">
+
+    <fragment
+        android:id="@+id/home_dest"
+        android:name="com.example.imageviewer.ui.home.HomeFragment"
+        android:label="Home"
+        tools:layout="@layout/home_fragment">
+
+        <action
+            android:id="@+id/home_to_download"
+            app:destination="@id/download_dest"/>
+
+        <action
+            android:id="@+id/home_to_image_viewer"
+            app:destination="@id/image_viewer_dest"/>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/download_dest"
+        android:name="com.example.imageviewer.ui.download.DownloadFragment"
+        android:label="Home"
+        tools:layout="@layout/download_fragment"/>
+
+    <fragment
+        android:id="@+id/image_viewer_dest"
+        android:name="com.example.imageviewer.ui.viewer.ImageViewerFragment"
+        android:label="Home"
+        tools:layout="@layout/image_viewer_fragment"/>
+
+</navigation>
