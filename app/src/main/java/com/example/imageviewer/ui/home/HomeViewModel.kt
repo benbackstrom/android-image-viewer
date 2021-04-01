@@ -25,7 +25,7 @@ class HomeViewModel @Inject constructor() : ViewModel() {
         rescan()
     }
 
-    private fun rescan() {
+    fun rescan() {
         GlobalScope.launch(Dispatchers.Main) {
             val images = withContext(Dispatchers.IO) {
                 imagesRepository.reloadLocalList()

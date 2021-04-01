@@ -7,7 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.imageviewer.R
 import com.example.imageviewer.databinding.HomeFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -27,9 +29,8 @@ class HomeFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val recyclerView = binding?.recyclerView ?: return
-        recyclerView.adapter = imageAdapter
-        recyclerView.layoutManager = LinearLayoutManager(context)
+        setupList()
+        setupToolbar()
 
         viewModel.imageData.observe(viewLifecycleOwner) { images ->
             imageAdapter.images = images
@@ -39,5 +40,22 @@ class HomeFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         binding = null
+    }
+
+    private fun setupList() {
+        val recyclerView = binding?.recyclerView ?: return
+        recyclerView.adapter = imageAdapter
+        recyclerView.layoutManager = LinearLayoutManager(context)
+    }
+
+    private fun setupToolbar() {
+        binding?.fragmentToolbar?.backIcon?.visibility = View.GONE
+        binding?.fragmentToolbar?.titleView?.text = "Image Viewer"
+        binding?.fragmentToolbar?.menuIconRefresh?.setOnClickListener {
+            viewModel.rescan()
+        }
+        binding?.fragmentToolbar?.menuIconDownload?.setOnClickListener {
+            findNavController().navigate(R.id.download_dest)
+        }
     }
 }
