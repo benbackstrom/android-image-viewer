@@ -1,28 +1,43 @@
 package com.example.imageviewer.ui.home
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.imageviewer.R
+import android.widget.LinearLayout
+import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.imageviewer.databinding.HomeFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
 
-    private lateinit var viewModel: HomeViewModel
+    @Inject
+    lateinit var imageAdapter: HomeAdapter
+    private val viewModel: HomeViewModel by viewModels()
+    private var binding: HomeFragmentBinding? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.home_fragment, container, false)
+        binding = HomeFragmentBinding.inflate(inflater, container, false)
+        return binding!!.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
-        // TODO: Use the ViewModel
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val recyclerView = binding?.recyclerView ?: return
+        recyclerView.adapter = imageAdapter
+        recyclerView.layoutManager = LinearLayoutManager(context)
+
+        viewModel.imageData.observe(viewLifecycleOwner) { images ->
+            imageAdapter.images = images
+        }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        binding = null
+    }
 }

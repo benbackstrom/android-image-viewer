@@ -4,8 +4,9 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
-class ImagesDBHelper(@ApplicationContext context: Context): SQLiteOpenHelper(
+class ImagesDBHelper @Inject constructor(@ApplicationContext context: Context): SQLiteOpenHelper(
     context,
     ImagesDBContract.DATABASE_NAME,
     null,

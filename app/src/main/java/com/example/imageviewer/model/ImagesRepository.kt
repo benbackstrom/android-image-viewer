@@ -1,7 +1,10 @@
 package com.example.imageviewer.model
 
+import android.content.ContentProvider
 import android.content.Context
 import androidx.annotation.WorkerThread
+import androidx.constraintlayout.solver.widgets.analyzer.Direct
+import com.example.imageviewer.DirectoryProvider
 import com.example.imageviewer.model.local.ImagesDataSource
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
@@ -9,11 +12,13 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ImagesRepository {
+class ImagesRepository @Inject constructor() {
 
     @ApplicationContext
     lateinit var context: Context
 
+    @Inject
+    lateinit var directoryProvider: DirectoryProvider
     @Inject
     lateinit var localDataSource: ImagesDataSource
 
@@ -28,7 +33,7 @@ class ImagesRepository {
 
         // 2. Find all jpg/jpeg and png files.
         val imageFiles = mutableListOf<File>().apply {
-            val foundFiles = context.getExternalFilesDir(null)?.listFiles() ?: emptyArray()
+            val foundFiles = directoryProvider.directory?.listFiles() ?: emptyArray()
             for (file in foundFiles) {
                 if (file.isFile
                     && (file.name.endsWith(".jpeg", ignoreCase = true)

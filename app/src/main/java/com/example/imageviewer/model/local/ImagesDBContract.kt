@@ -12,8 +12,7 @@ object ImagesDBContract {
     const val COLUMN_NAME_DESCRIPTION = "description"
     const val COLUMN_NAME_CREATED_STAMP = "created_stamp"
 
-    const val CREATE_TABLE_STATEMENT = "CREATE TABLE IF NOT EXISTS $TABLE_NAME\n" +
-            "AS (\n" +
+    const val CREATE_TABLE_STATEMENT = "CREATE TABLE IF NOT EXISTS $TABLE_NAME (\n" +
             "  $COLUMN_NAME_FILE_NAME TEXT INTEGER PRIMARY KEY,\n" +
             "  $COLUMN_NAME_TITLE TEXT,\n" +
             "  $COLUMN_NAME_DESCRIPTION TEXT,\n" +
