@@ -49,12 +49,10 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupToolbar() {
-        binding?.fragmentToolbar?.backIcon?.visibility = View.GONE
-        binding?.fragmentToolbar?.titleView?.text = "Image Viewer"
-        binding?.fragmentToolbar?.menuIconRefresh?.setOnClickListener {
+        binding?.menuIconRefresh?.setOnClickListener {
             viewModel.rescan()
         }
-        binding?.fragmentToolbar?.menuIconDownload?.setOnClickListener {
+        binding?.menuIconDownload?.setOnClickListener {
             findNavController().navigate(R.id.download_dest)
         }
     }

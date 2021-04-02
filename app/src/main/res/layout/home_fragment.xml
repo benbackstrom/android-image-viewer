@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -7,12 +8,50 @@
     android:layout_height="match_parent"
     tools:context=".ui.home.HomeFragment">
 
-    <include
-        layout="@layout/fragment_toolbar"
-        android:id="@+id/fragment_toolbar"
+    <View
+        android:id="@+id/toolbar_background"
+        android:layout_width="match_parent"
+        android:layout_height="@android:dimen/notification_large_icon_height"
+        android:background="?attr/colorPrimary"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
+
+    <TextView
+        android:id="@+id/titleView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        app:layout_constraintBottom_toBottomOf="@id/toolbar_background"
+        app:layout_constraintTop_toTopOf="@id/toolbar_background"
+        android:text="@string/app_name"
+        android:textColor="?attr/colorOnPrimary"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="@id/toolbar_background"/>
+
+    <ImageView
+        android:id="@+id/menuIconRefresh"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="18dp"
+        android:src="@drawable/ic_baseline_refresh_24"
+        app:tint="?attr/colorOnPrimary"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toStartOf="@id/menuIconDownload"
+        app:layout_constraintTop_toTopOf="@id/toolbar_background"
+        app:layout_constraintBottom_toBottomOf="@id/toolbar_background"/>
+
+    <ImageView
+        android:id="@+id/menuIconDownload"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="18dp"
+        android:src="@drawable/ic_baseline_cloud_download_24"
+        app:tint="?attr/colorOnPrimary"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="@id/toolbar_background"
+        app:layout_constraintTop_toTopOf="@id/toolbar_background"
+        app:layout_constraintBottom_toBottomOf="@id/toolbar_background"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
@@ -21,7 +60,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/fragment_toolbar"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_background"
         tools:listitem="@layout/home_list_item"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
