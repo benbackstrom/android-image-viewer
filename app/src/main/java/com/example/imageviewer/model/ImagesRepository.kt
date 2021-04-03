@@ -2,9 +2,11 @@ package com.example.imageviewer.model
 
 import android.content.ContentProvider
 import android.content.Context
+import android.graphics.Bitmap
 import androidx.annotation.WorkerThread
 import androidx.constraintlayout.solver.widgets.analyzer.Direct
 import com.example.imageviewer.DirectoryProvider
+import com.example.imageviewer.model.download.DownloadsDataSource
 import com.example.imageviewer.model.local.ImagesDataSource
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
@@ -21,6 +23,8 @@ class ImagesRepository @Inject constructor() {
     lateinit var directoryProvider: DirectoryProvider
     @Inject
     lateinit var localDataSource: ImagesDataSource
+    @Inject
+    lateinit var remoteDataSource: DownloadsDataSource
 
     @WorkerThread
     fun reloadLocalList(): List<Image> {
@@ -52,7 +56,15 @@ class ImagesRepository @Inject constructor() {
             if (matchingImages.isNotEmpty()) {
                 storedImagesMap.remove(file.name)
             } else {
-                val image = Image(file.name, "No Title", "No description", System.currentTimeMillis())
+                val compressFormat = when {
+                    file.name.endsWith(".jpeg", ignoreCase = true) ||
+                    file.name.endsWith(".jpg", ignoreCase = true) -> Bitmap.CompressFormat.JPEG
+                    file.name.endsWith(".png", ignoreCase = true) -> Bitmap.CompressFormat.PNG
+                    file.name.endsWith(".webp", ignoreCase = true) -> Bitmap.CompressFormat.WEBP
+                    else -> break
+                }
+
+                val image = Image(file.name, "No Title", "No description", System.currentTimeMillis(), compressFormat)
                 localDataSource.insert(image)
             }
         }
@@ -64,5 +76,25 @@ class ImagesRepository @Inject constructor() {
 
         // 5. Re-query and return the results.
         return localDataSource.selectAll()
+    }
+
+    @WorkerThread
+    fun downloadAndSaveImage(image: Image, url: String): Boolean {
+        // 1. Request the bitmap from the given URL, or return if failed.
+        val bitmap = remoteDataSource.requestBitmap(url) ?: return false
+
+        // 2. Save the bitmap to a local file, or return if failed.
+        val filePath = "${directoryProvider.directory}${File.separator}${image.fileName}"
+        val imageFile = File(filePath);
+        if (!localDataSource.saveBitmapToFile(image.compressFormat, imageFile, bitmap))
+            return false
+
+        // 3. Save an entry for the bitmap in the database, or remove file and return if failed.
+        if (!localDataSource.insert(image)) {
+            imageFile.delete()
+            return false
+        }
+
+        return true
     }
 }

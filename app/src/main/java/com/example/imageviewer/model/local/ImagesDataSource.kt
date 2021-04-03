@@ -2,8 +2,11 @@ package com.example.imageviewer.model.local
 
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
+import android.graphics.Bitmap
 import androidx.annotation.WorkerThread
+import com.example.imageviewer.DirectoryProvider
 import com.example.imageviewer.model.Image
+import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -12,6 +15,8 @@ class ImagesDataSource @Inject constructor() {
 
     @Inject
     lateinit var dbHelper: ImagesDBHelper
+    @Inject
+    lateinit var directoryProvider: DirectoryProvider
 
     @WorkerThread
     fun insert(image: Image): Boolean {
@@ -22,6 +27,7 @@ class ImagesDataSource @Inject constructor() {
             put(ImagesDBContract.COLUMN_NAME_TITLE, image.title)
             put(ImagesDBContract.COLUMN_NAME_DESCRIPTION, image.description)
             put(ImagesDBContract.COLUMN_NAME_CREATED_STAMP, image.createdTimestamp)
+            put(ImagesDBContract.COLUMN_NAME_COMPRESS_FORMAT, image.compressFormat.name)
         }
 
         // -1 means the query hit an error
@@ -46,6 +52,7 @@ class ImagesDataSource @Inject constructor() {
             put(ImagesDBContract.COLUMN_NAME_FILE_NAME, image.fileName)
             put(ImagesDBContract.COLUMN_NAME_DESCRIPTION, image.description)
             put(ImagesDBContract.COLUMN_NAME_CREATED_STAMP, image.createdTimestamp)
+            put(ImagesDBContract.COLUMN_NAME_COMPRESS_FORMAT, image.compressFormat.name)
         }
 
         val selection = "${ImagesDBContract.COLUMN_NAME_FILE_NAME} LIKE ?"
@@ -74,11 +81,15 @@ class ImagesDataSource @Inject constructor() {
 
         with (cursor) {
             while (cursor.moveToNext()) {
+                val compressFormatString = cursor.getString(getColumnIndexOrThrow(ImagesDBContract.COLUMN_NAME_COMPRESS_FORMAT))
+                val compressFormat = Bitmap.CompressFormat.valueOf(compressFormatString)
+
                 val image = Image(
                     cursor.getString(getColumnIndexOrThrow(ImagesDBContract.COLUMN_NAME_FILE_NAME)),
                     cursor.getString(getColumnIndexOrThrow(ImagesDBContract.COLUMN_NAME_TITLE)),
                     cursor.getString(getColumnIndexOrThrow(ImagesDBContract.COLUMN_NAME_DESCRIPTION)),
-                    cursor.getLong(getColumnIndexOrThrow(ImagesDBContract.COLUMN_NAME_CREATED_STAMP)))
+                    cursor.getLong(getColumnIndexOrThrow(ImagesDBContract.COLUMN_NAME_CREATED_STAMP)),
+                    compressFormat)
 
                 results.add(image)
             }
@@ -112,11 +123,15 @@ class ImagesDataSource @Inject constructor() {
 
         with (cursor) {
             while (cursor.moveToNext()) {
+                val compressFormatString = cursor.getString(getColumnIndexOrThrow(ImagesDBContract.COLUMN_NAME_COMPRESS_FORMAT))
+                val compressFormat = Bitmap.CompressFormat.valueOf(compressFormatString)
+
                 val image = Image(
                     cursor.getString(getColumnIndexOrThrow(ImagesDBContract.COLUMN_NAME_FILE_NAME)),
                     cursor.getString(getColumnIndexOrThrow(ImagesDBContract.COLUMN_NAME_TITLE)),
                     cursor.getString(getColumnIndexOrThrow(ImagesDBContract.COLUMN_NAME_DESCRIPTION)),
-                    cursor.getLong(getColumnIndexOrThrow(ImagesDBContract.COLUMN_NAME_CREATED_STAMP)))
+                    cursor.getLong(getColumnIndexOrThrow(ImagesDBContract.COLUMN_NAME_CREATED_STAMP)),
+                    compressFormat)
 
                 results.add(image)
             }
@@ -125,5 +140,10 @@ class ImagesDataSource @Inject constructor() {
         cursor.close()
 
         return results
+    }
+
+    @WorkerThread
+    fun saveBitmapToFile(compressFormat: Bitmap.CompressFormat, outputFile: File, bitmap: Bitmap): Boolean {
+        return bitmap.compress(compressFormat, 80, outputFile.outputStream())
     }
 }
